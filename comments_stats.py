@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-for year in ['2022', '2023']:
+for year in ['2022']:
     matches = pd.read_csv(f"brzao{year}.csv") 
 
     comments_data = []
@@ -15,7 +15,7 @@ for year in ['2022', '2023']:
             continue
         else:
             print(f"Lendo arquivo {input_file}")
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, engine='python')
         comments_data.append([video_id, row['rodada'], df.shape[0], row['views']])
 
     df_comments = pd.DataFrame(comments_data, columns=['id', 'rodada', 'num_comments', 'views'])
