@@ -199,15 +199,20 @@ print("Video IDs:", video_ids)
 
 # Criando csv para os jogos de 2023
 
-#ids_1st_turno_2023 = []
-##
-#for video_id, label in mapIdToVideoName_2023:
-#    ids_1st_turno_2023.append((label, video_id, 0))
+ids_1st_turno_2023 = []
 #
-##df = pd.DataFrame(ids_1st_turno_2023, columns=['label', 'id', 'rodada'])
-#df.to_csv("brzao2023.csv", index=False, encoding='utf-8')
-#
-#
+
+aux = pd.read_csv("views_2023.csv")
+aux = list(aux['id'])
+
+
+for video_id,label in mapIdToVideoName_2023:
+    ids_1st_turno_2023.append((label, video_id, 0))
+
+df = pd.DataFrame(ids_1st_turno_2023, columns=['label', 'id', 'rodada'])
+df.to_csv("brzao2023.csv", index=False, encoding='utf-8')
+
+
 ## Getting the views number of each video
 ## Using the youtube-dl to get the views number of each video
 import subprocess
@@ -220,6 +225,14 @@ for video_id, _ in mapIdToVideoName_2023:
     #command = f"yt-dlp --write-info-json --skip-download https://www.youtube.com/watch?v={video_id}"
     # Será necessário padronizar o saida do arquivo json para pegar o campo view_count
     # usando o -o "{video_id}.%(ext)s"
+    
+    if os.path.exists(f"./metadata/2023/{video_id}.info.json"):
+        print(f"Arquivo {video_id}.info.json já existe...")
+        with open(f"./metadata/2023/{video_id}.info.json", 'r', encoding='utf-8') as f:
+            video_info = json.load(f)
+            views[video_id] = video_info['view_count']
+        continue
+
     command = f"yt-dlp --write-info-json --skip-download -o {video_id} https://www.youtube.com/watch?v={video_id}"
     subprocess.run(command, shell=True, check=True)
         
@@ -230,7 +243,7 @@ for video_id, _ in mapIdToVideoName_2023:
     
     # This command will returno a json file with the video information
     # We need to get the field "view_count" from this json file
-    with open(f"./{video_id}.info.json", 'r', encoding='utf-8') as f:
+    with open(f"./metadata/2023/{video_id}.info.json", 'r', encoding='utf-8') as f:
         video_info = json.load(f)
         views[video_id] = video_info['view_count']
     #views[video_id] = subprocess.check_output(command, shell=True).decode('utf-8')
